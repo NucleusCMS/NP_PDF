@@ -1,4 +1,4 @@
-<?
+<?php
 
 global $DIR_PLUGINS, $manager;
 define('FPDF_FONTPATH',$DIR_PLUGINS.'pdf/font/');
@@ -197,4 +197,3 @@ if($manager->pluginInstalled('NP_Wikistyle')){
 	}
 
 } 
-?>

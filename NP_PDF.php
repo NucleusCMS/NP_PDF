@@ -28,6 +28,8 @@ class NP_PDF extends NucleusPlugin {
 		switch($feature) {
 			case 'SqlTablePrefix':
 				return 1;
+			case 'SqlApi':
+				return 1;
 			default:
 				return 0;
 		}
@@ -58,7 +60,7 @@ class NP_PDF extends NucleusPlugin {
   function _redirect(){
     $url = "http://".$_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'];
     header("Location: $url");
-    $url = htmlspecialchars($url);
+    $url = hsc($url);
     die("Redirected: <a href=\"$url\">$url</a>");
   }	
 
@@ -78,20 +80,20 @@ class NP_PDF extends NucleusPlugin {
     global $CONF, $DIR_MEDIA ,$manager;
     $itemid = intRequestVar('itemid');
 
-    $query=mysql_query('select ibody as body, imore as more, ititle as title, UNIX_TIMESTAMP(itime) as time, iauthor as member from '.sql_table('item').' where inumber='.strval($itemid));
-    if (!$row=mysql_fetch_object($query)) $this->_redirect();
+    $query=sql_query('select ibody as body, imore as more, ititle as title, UNIX_TIMESTAMP(itime) as time, iauthor as member from '.sql_table('item').' where inumber='.strval($itemid));
+    if (!$row=sql_fetch_object($query)) $this->_redirect();
     
     $row->body = stripslashes($row->body);
     $row->more = stripslashes($row->more);
 
 if($manager->pluginInstalled('NP_Wikistyle')){
 	$wi = new NP_Wikistyle;
-    $wi->convert_wikitag(&$row->body);
+    $wi->convert_wikitag($row->body);
     $wi->convert_wikitag($row->more);
 }
 
-    $mquery = mysql_query("SELECT mrealname, mname FROM ".sql_table('member')." WHERE mnumber = ".$row->member);
-    $member = mysql_fetch_object($mquery);
+    $mquery = sql_query("SELECT mrealname, mname FROM ".sql_table('member')." WHERE mnumber = ".$row->member);
+    $member = sql_fetch_object($mquery);
 
     // change some tags into pseudo-tags
     $str=array(
